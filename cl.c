@@ -15,6 +15,10 @@
 #define PORT_NUM 21314
 #define IP_ADDR "108.75.26.73"	//server ip address
 char recv_buf[1500],send_buf[1024];  
+
+char recv_buf_name[3];
+char name_compare[3];
+char name[20];
   
 void display_function(int sockfd){   //receive message from server and display
     int recvbytes;  
@@ -23,8 +27,12 @@ void display_function(int sockfd){   //receive message from server and display
             perror("recv error");  
             exit(1);  
         }else{  
-            recv_buf[recvbytes]='\0';  
-            printf("%s\n", recv_buf);  
+            recv_buf[recvbytes]='\0';
+		strncpy(recv_buf_name,recv_buf,3);
+		strncpy(name_compare,name,3);
+		if(strcmp(name_compare,recv_buf_name)!=0){  
+            	printf("%s\n",recv_buf);
+		}  
         }  
     }  
 }  
@@ -45,14 +53,15 @@ int main(void){
         exit(1);  
     }
 //--------------send username to server--------------
-    char name[20];
+//    char name[20];
     printf("input your name:");  
     scanf("%s",name);  
     send(sockfd,name,strlen(name),0);  
 
     pthread_create(&id,NULL,(void *)display_function,(int *)sockfd);  
     while(1){  //send message to server
-        gets(send_buf);  
+        printf("You:");
+	gets(send_buf);  
         if(send(sockfd,send_buf,strlen(send_buf),0)==-1){  
             perror("send error");  
             exit(1);  
